@@ -16,7 +16,7 @@ def calcShannonEnt(dataSet):
         shannonEnt -= prob * log(prob, 2)
     return shannonEnt
 
-#创建一个数据集
+#创建一个简答的数据集
 def createDataSet():
     dataSet = [[1, 1,'yes'],
                 [1, 1,'yes'],
