@@ -1,5 +1,6 @@
 from math import log
 import operator
+import treePlotter
 
 #计算给定数据集的香浓熵
 def calcShannonEnt(dataSet):
@@ -16,7 +17,7 @@ def calcShannonEnt(dataSet):
         shannonEnt -= prob * log(prob, 2)
     return shannonEnt
 
-#创建一个简答的数据集
+#创建一个数据集
 def createDataSet():
     dataSet = [[1, 1,'yes'],
                 [1, 1,'yes'],
@@ -88,11 +89,48 @@ def createTree(dataSet, labels):
         myTree[bestFeatLabel][value] = createTree(splitDataSet(dataSet, bestFeat, value), subLabels)
     return myTree
 
+#使用决策树作为基本方法的分类函数
+def classify(inputTree, featLabels, testVec):
+    firstStr = list(inputTree.keys())[0]
+    #print(firstStr)
+    secondDict = inputTree[firstStr]
+    featIndex = featLabels.index(firstStr)
+    for key in secondDict.keys():
+        if testVec[featIndex] == key:
+            #递归调用
+            if type(secondDict[key]).__name__ == 'dict':
+                classLabel = classify(secondDict[key], featLabels, testVec)
+            else:
+                classLabel = secondDict[key]
+    return classLabel
+
+#使用pickle存储决策树，这样节省了计算机资源
+def storeTree(inputTree, filename):
+    import pickle
+    fw = open(filename, 'wb')
+    pickle.dump(inputTree, fw)
+    fw.close()
+
+def grabTree(filename):
+    import pickle
+    fr = open(filename,'rb')
+    return pickle.load(fr)
 
 if __name__ == '__main__':
-    myData, labels = createDataSet()
-    myTree = createTree(myData, labels)
-    print(myTree)
+    # myTree = treePlotter.retrieveTree(0)
+    # storeTree(myTree, 'classifierStorage.txt')
+    # tree = grabTree('classifierStorage.txt')
+    # print(tree)
+
+    fr = open('D:\engeering lib\python\Machine_learningFight\Tree\lenses.txt')
+    lenses = [inst.strip().split('\t') for inst in fr.readlines()]
+    lensesLabels = ['age', 'prescript', 'astigmatic', 'tearRate']
+    lensesTree = createTree(lenses, lensesLabels)
+    # print(lensesTree)
+    treePlotter.createPlot(lensesTree)
+
+    
+
 
         
 
